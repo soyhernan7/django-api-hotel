@@ -199,13 +199,14 @@ Search, es crear un forma de realizar busquedas en todos los modelos para los bu
 En cada una de las carpetas por DRF, ya tenemos el crud de forma casi automatica, asi que no valdria la pena explicar lo que esta en : https://www.django-rest-framework.org/
 
 ## TESTING
-```code
+```bash
 .
 ├── ...
 ├── tests                    # Test files (alternatively `spec` or `tests`)
 │   ├── factory              # modela la generacion de datos para las pruebas
 │   └── hotel                # Unit tests para cada modulo
 └── ...
+```
 
 ```python
 $ python manage.py test -v 2
