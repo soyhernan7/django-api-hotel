@@ -6,19 +6,19 @@ CONDICIONES:
 - Las reservas pueden tener 3 estados: Pendiente, Pagado y Eliminado.
 - Los datos a almacenar para la reserva son: los detalles del cuarto reservado, los días de estadía, los datos de facturación e identificación del cliente, el monto pagado y el método de pago.
 - Proponer los endpoints a crearse para tratar de cubrir el flujo normal de operación de reserva y explicar por qué.
+
 # Análisis
-De acuerdo al requerimiento se plantea un sistema transaccional, por esta razón se eligio  una base de datos relacional (PostgreSQL) en este caso.
+De acuerdo al requerimiento se plantea un sistema transaccional, por esta razón se eligio  una base de datos relacional (PostgreSQL o cualquier otro) en este caso.
 Al elegir una relacional debemos empezar por el modelo ver que responda a los requerimientos, para ellos definimos las siguientes tablas y relaciones:
 
 
 ![Model ER Django Hotel API](https://i.ibb.co/BfqLkdv/idiagramaer.png)
 #### room_type 
-Los tipos de cuartos que hay en un hotel ejm. Habitacion simple, habitacion doble, habitacion matrimonial, etc.
-Aprovechamos este clasificador para colocar tambien el precio y si tiene algun tipo de descuento (en porcentaje)
+
 #### room 
 Son los cuartos en si y pueden estar codificados ejm. PB2, Planta Baja habitación 2.
 Es posible que el API se use en web o moviles asi que colocamos la foto de la habitacion.
-si la habitación esta disponible (is)_active=true) Y el tipo de cuarto de acuerdo a room_type.
+si la habitación esta disponible (is)_active=true) Y el tipo de cuarto de acuerdo a room_type (ejm. Habitacion simple, habitacion doble, habitacion matrimonial, etc.)
 #### user
 esta entidad es la que viene con django.contrib.auth, y esta todo el sistema de autenticacion. Para fines prácticos de este ejemplo usaremos esta tabla para registrar a los clientes (no es recomendable ya que tiene muchos campos que no siempre usaran los usuarios pero vale para el ejemplo).
 colocamos varios campos como la photo(en caso que tenga un perfil el usuario), el telefono, ciudad,etc. y  también usamos esta tabla para el registro del NIT y el nombre a la que saldra la factura.
@@ -29,8 +29,6 @@ Es ya la parte central del proyecto,
 - arrivalDate, cuando llegara al hotel (fecha que tomara el cuarto)
 - day_of_stay, cuanto tiempo se va quedar tentativamente el cliente
 - room y user, el cuarto que selecciona y vinculamos al cliente que esta haciendo la reserva
-#### billtype
-Es el metodo de pago , puede ser efectivo, tarjeta de credito, u otras pasarelas de pago.
 #### bill
 Aqui ya se efectiviza el pago en si, se separo en otra tabla porque los pagos pueden en varias partes Ejm. 50% al ingresar y el otro 50% al salir, si el cliente decide quedarse unos dias mas etc. por eso se definio un historico para sacar un estado de cuenta del cliente.
 - date, la fecha que se realizo el pago
@@ -81,9 +79,11 @@ volumes:
 # Desarrollo
 Con las herramientas elegidas, usaremos **DRF**, vamos a realizar un proyecto que será un  **CRUD** de varias tablase y nos facilitara hacerlo rapido.
 En el que un usuario podrá registrarse como admin  o cliente para aparecer en las búsquedas. Ambos podrán autenticarse y el usuario admin podrá añadir información acerca de su cuartos, metodos de pagos, etc. El cliente solo podra hacer la reserva.
+
 ### users
 Ahora vamos a usar el modelo para usuarios, utilizaremos el modelo ya existente en Django para usuarios y añadiremos una fecha de modificación, la foto del usuario, teléfono, ciudad, país y los datos para la facturación. También modificaremos la configuración por defecto para que el login sea mediante el password en vez de por username.
 Para no juntar el codigo todo en unos cuantos archivos vamos crear diferentes proyectos este sera el de Users y tendra sus propios modelos, views y serializares. esto para separa un poco la logica de negocio y sea un poco mas mantenible.
+
 La estructura quedaria algo asi :
 ![enter image description here](https://i.ibb.co/DMWfnCn/iusers.png)
 
@@ -181,7 +181,7 @@ Ran 3 tests in 0.855s
 OK
 Destroying test database for alias 'default'...
 ```
-### booking y demas modelos
+### booking y bills
 De igual forma se realiza los demas proyectos, se dividio en : bill, booking,room y users.
 Search, es crear un forma de realizar busquedas en todos los modelos para los buscadores y no hacer uno por uno. Sera explicado mas adelante.
 
@@ -192,23 +192,65 @@ En cada una de las carpetas por DRF, ya tenemos el crud de forma casi automatica
 ## TESTING
 
 ```python
-$ python manage.py test -v 1
-...
-...
+$ python manage.py test -v 2
+Creating test database for alias 'default' ('test_hotel')...
+Operations to perform:
+  Synchronize unmigrated apps: base, ckeditor, django_seed, drf_yasg, messages, rest_framework, shortuuidfield, simple_history, staticfiles
+  Apply all migrations: admin, auth, bills, booking, contenttypes, rooms, sessions, users
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying users.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying rooms.0001_initial... OK
+  Applying rooms.0002_historicalroom_history_user... OK
+  Applying rooms.0003_auto_20220401_2133... OK
+  Applying rooms.0004_auto_20220401_2139... OK
+  Applying rooms.0005_auto_20220401_2159... OK
+  Applying rooms.0006_auto_20220401_2202... OK
+  Applying rooms.0007_auto_20220401_2222... OK
+  Applying rooms.0008_alter_room_type... OK
+  Applying booking.0001_initial... OK
+  Applying booking.0002_auto_20220403_1716... OK
+  Applying booking.0003_auto_20220403_1723... OK
+  Applying bills.0001_initial... OK
+  Applying sessions.0001_initial... OK
+  Applying users.0002_alter_user_id... OK
 System check identified no issues (0 silenced).
-test_signup_user (users.tests.UserTestCase) Verificamos si podemos crear un user ... ok
-test_login_user (users.tests.UserTestCase) Verificamos si podemos hacer login con el user ... ok
-test_fail_login_user (users.tests.UserTestCase) Verificamos si nos devuelve error con un password incorrecto y no devuelve el token ... ok
-test_create_roomtype (room.tests.RoomTestCase) Verificamos si podemos crear un Roomtype ... ok
-test_create_room (room.tests.RoomTestCase) Verificamos si podemos crear un Room ... ok
-test_create_booking (booking.tests.BookingTestCase) Verificamos si podemos crear una Reserva en booking ... ok
-test_create_bill (bill.tests.BillTestCase) Verificamos si podemos crear un BillTestCase ... ok
+test_room_can_be_unavailable_after_reservation (tests.hotel.bill.test_bill.CreateBookingTest) ... ok
+test_room_can_be_unavailable_after_reservation (tests.hotel.booking.test_booking.CreateBookingTest) ... ok
+test_room1_can_record_room (tests.hotel.rooms.test_rooms.CreateRoomsTest)
+Puede registrar un cuarto ... ok
+test_room2_can_not_record_with_no_field_type (tests.hotel.rooms.test_rooms.CreateRoomsTest)
+No Puede registrar un cuarto sin tipo de cuarto ... ok
+test_room3_can_view_a_room (tests.hotel.rooms.test_rooms.CreateRoomsTest)
+Puede ver un cuarto en particular en la url : /api/rooms/1 ... ok
+test_room4_can_view_all_rooms (tests.hotel.rooms.test_rooms.CreateRoomsTest)
+Puede listar todos los cuartos ... ok
+test_signup_user (tests.hotel.users.test_users.UserTestCase)
+Verificamos si podemos crear un user ... ok
+
 ----------------------------------------------------------------------
-Ran 7 tests in 0.021s
+Ran 7 tests in 0.460s
 
 OK
-
-```
 
 ## FUNCIONALIDAD DE LOS APIS CON POSTMAN
 para verificar nuestros APIS tambien podemos usar POSTMAN y simulemos un pequeño flujo como el siguiente :
@@ -222,39 +264,55 @@ Una vez registrado el cliente,  iniciamos su login y este nos devuelve el token
 A partir de ahora es necesario configurar nuestro postman, para guardar ese token y utilizar ya que nos permitirá sino realizamos esta tarea.
 ![enter image description here](https://i.ibb.co/ZWFW0n6/ipost2.png)
 
-3. Ver si el cuarto (room_id) que quiere el cliente(user_id) esta disponible para una fecha dada.
-- GET: /room_is_busy_on_date?room=30&arrivaldate=2022-01-01
-- Cuando Un cliente busca una habitacion ya sea en linea o en recepcion del mismo hotel, puede estar ocupado?, si lo esta debemos calcular hasta cuando estara ocupado por el otro huesped (en epoca alta es importante el dato). Entonces tiene que haber algun lugar donde solcitar esa informacion antes de realizar la reserva y no permitir dos reservas a un cuarto en una misma fecha.
-![enter image description here](https://i.ibb.co/KbQcyGp/ipost3.png)
-podemos observar que mandamos por el metodo GET, el cuarto que queremos (room) y la fecha tentativa que queremos realizar la reserva y nos responde que el mismo esta ocupado (tomando en cuenta los dias de estadia). Razon por la cual no se podria reazliar la reserva. 
-4. Realizar la Reserva  :  POST:/booking
+3. Registrar el Cuarto
+POST: /rooms/
+Ejm. 
+{
+    "type": "Simple",
+    "code": "PB1",
+    "description": "Habitacion PB-1",
+    "price_day": 100,
+    "discount_rate": 10,
+    "available": true
+}
+4. Realizar la Reserva  :  
+POST:/booking
+{
+    "user": "2",
+    "room": "2",
+    "bookingDate": "2022-04-10",
+    "arrivalDate": "2022-04-10",
+    "day_of_stay": 2,
+    "state": "Pendiente"
+}
 	- elige el room de acuerdo al room_type
 	- se set el estado
 	- se registra : bookingDate,arrivalDate,ArrivalDate,dias_estadia
 	- validar que ese cuarto no este reservado en ese dia.
-Tambien podesmos desplegar las reservas que hay hasta este momento.
-![enter image description here](https://i.ibb.co/p288zCt/ipost4.png)
-5. Se procede a realizar el pago	: POST:/bill/
-	- bill es otra tabla porque acepta pagos parciales y se puede ir sumando para saber el saldo.
-	En este ejemplo el cliente esta pagando 150Bs a cuenta.![enter image description here](https://i.ibb.co/tYtLVmm/ipost5.png)
-6. Ver el cliente puede ver su estado de cuenta y los pagos que realizo: GET:/bill_payment_account?user_id=1&room_id=30
+
+5. Se procede a realizar el pago	
+POST:/bills/
+{
+    "debit": 100,
+    "credit": 0,
+    "booking": 1,
+    "bill_type": "Efectivo",
+    "date": "2022-04-10 09:00"
+}
+- bill es otra tabla porque acepta pagos parciales y se puede ir sumando para saber el saldo.
+
+6. Ver el cliente puede ver su estado de cuenta y los pagos que realizo: GET:/bills/bill_payment_account?user=2&room=1
 ahi podemos ver que realizo dos pagos, en determinadas fechas, lo cual en un reporte se puede sacar el total y esteblecer la deuda(si tuviera)
-![enter image description here](https://i.ibb.co/4F6cpqc/ipost6.png)
-7. Para establecer la deuda, es importante saber cuanto debe el cliente de acuerdo a su habitacion: El proceso de calculo se hace averiguando cuanto cuesta por dia (room_type.price) ese tipo de cuarto, ver el descuento que tiene en esta epoca(room_type.discount) y calcular desde la fecha de arribo del cliente (booking.arrivalDate) y el tiempo de estadia que puede ser variable en dias (booking.day_of_stay). Este calculo será la deuda y este debera actualizar el estado de la reserva (Pendiente, Pagado, Eliminado).
-- GET:/Bill_payment_total?booking_id=1
-- ![enter image description here](https://i.ibb.co/q1hCtt8/ipost7.png)
+
 
 ## DOCUMENTACION DEL API
 - Para enteder un poco mas de los APIS que realizan los calculos imporantes se puede consultar a : https://documenter.getpostman.com/view/5404065/UVypzxcs
 
 ## RECOMENDACIONES
-- Es un proyecto sencillo usando django y DRF, sin embargo, para escalar se deberia usar una arquitectura mas robusta (ejm hexagonal o microservicios). en esta ultima permiten ejecutar funciones por separado y, si es que por algún motivo un servicio falla, el resto seguirá funcionando sin verse afectado por el que tiene problemas.
-- Podriamos mejorar el codigo usando algo mas de Solid y restructurar las carpetas y incorporar inyeccion de dependencias entre otras cosas.
+- Es un proyecto sencillo usando django y DRF, sin embargo, para escalar se deberia usar una arquitectura mas robusta (ejm microservicios). en esta ultima permiten ejecutar funciones por separado y, si es que por algún motivo un servicio falla, el resto seguirá funcionando sin verse afectado por el que tiene problemas.
+- Podriamos mejorar el codigo usando algo mas de Solid y restructurar las carpetas y incorporar inyeccion de dependencias entre otras cosas para que sea mas mantenible y escalable.
 - Tambien existen muchas posibilidades de extender el modelo, por ejemplo. guardar las preferencias del cliente (sin un ciente paga con tarjeta es muy probable que la siguiente que vuelva usara el mismo medio,etc) y estas se pueden guardar en tablas de preferencias. Utilizar un modelo para usar pasarelas de pago, etc.
 - Se deberia separar users de los clientes, para que el modelo no este sobrecargado y sea  mantenible de mejor forma. En tablas es preferible crecer de forma vertical que horizontal, este por temas de performance.
 - Una parte de la lógica se realizo en las consultas (querys) a la base de datos, si bien funciona, para que sea mas escalable se puede realizar gran parte de la lgoica en el backend (django), con la finalidad que que cuando el sistema escale, no este muy cargada la bdd y usar la misma solo como un repositorio para persistir la data.
 - De acuerdo a la cantidad de peticiones y despues de un test de estres. ver como usar las colas de las peticiones y procecesos paralelos.
-- Para despligue en prod usar kubernates con algun proveedor como digitalocean, aws, etc.
-
-Son algunas recomendaciones que según yo se pueden mejorar y evolucionar.
 
