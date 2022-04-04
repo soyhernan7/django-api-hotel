@@ -9,9 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-w)t=sg86m)jo@iv%y_of6v9-*-q2xdtz801a4r0t%$dff2qz&_'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# SECRET_KEY = os.environ['SECRET_KEY']
+# DEBUG = os.environ['DEBUG']
 
 ALLOWED_HOSTS = []
 
@@ -28,11 +28,11 @@ BASE_APPS = [
 ]
 
 LOCAL_APPS = [
-    'users',
+    'src.users',
     'src.base',
     'src.rooms',
-    # 'src.reservations',
-    # 'src.payments'
+    'src.booking',
+    'src.bills'
 ]
 
 THIRD_APPS = [

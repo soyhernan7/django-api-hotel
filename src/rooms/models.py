@@ -23,7 +23,7 @@ class Room(models.Model):
         verbose_name_plural = 'Rooms'
 
     def __str__(self):
-        return f"{self.id} | {self.type} |  {self.code}"
+        return f"{self.type}"
 
     def get_total_price_day(self):
         return self.price_day - (self.price_day * self.discount_rate)

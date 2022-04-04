@@ -9,7 +9,6 @@ class CreateRoomsTest(TestRoomsFactory):
         """ Puede registrar un cuarto """
         response = self.client.post(self.url, self.room_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['id'], 1)
 
     def test_room2_can_not_record_with_no_field_type(self):
         """ No Puede registrar un cuarto sin tipo de cuarto """

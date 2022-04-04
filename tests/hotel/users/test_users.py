@@ -11,7 +11,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 # Models
-from users.models import User
+from src.users.models import User
 
 
 class UserTestCase(TestCase):

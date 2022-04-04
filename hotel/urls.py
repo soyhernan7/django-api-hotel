@@ -23,13 +23,11 @@ from django.contrib import admin
 
 urlpatterns = [
    # re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-   # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-   # path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
+   
    path('admin/', admin.site.urls),
-    path('', include(('users.urls', 'users'), namespace='users')),   
+   path('', include(('src.users.urls', 'users'), namespace='users')),   
    path('rooms/', include('src.rooms.routers')),
-   # path('api/reservations/', include('src.reservations.api.routers')),
-   # path('api/payments/', include('src.payments.api.routers')),
+   path('booking/', include('src.booking.routers')),
+   path('bills/', include('src.bills.routers')),
+   
 ]
-# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

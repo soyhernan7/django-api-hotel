@@ -1,7 +1,6 @@
 import random
 import factory
 from faker import Faker
-
 from src.rooms.models import Room
 
 fake = Faker()
