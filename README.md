@@ -199,7 +199,7 @@ Search, es crear un forma de realizar busquedas en todos los modelos para los bu
 En cada una de las carpetas por DRF, ya tenemos el crud de forma casi automatica, asi que no valdria la pena explicar lo que esta en : https://www.django-rest-framework.org/
 
 ## TESTING
-
+```code
 .
 ├── ...
 ├── tests                    # Test files (alternatively `spec` or `tests`)
@@ -270,7 +270,7 @@ Ran 7 tests in 0.897s
 
 OK
 Destroying test database for alias 'default' ('test_hotel')...
-
+```
 ## FUNCIONALIDAD DE LOS APIS CON POSTMAN
 para verificar nuestros APIS tambien podemos usar POSTMAN y simulemos un pequeño flujo como el siguiente :
 
