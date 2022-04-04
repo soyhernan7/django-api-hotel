@@ -79,13 +79,22 @@ volumes:
 # Desarrollo
 Con las herramientas elegidas, usaremos **DRF**, vamos a realizar un proyecto que será un  **CRUD** de varias tablase y nos facilitara hacerlo rapido.
 En el que un usuario podrá registrarse como admin  o cliente para aparecer en las búsquedas. Ambos podrán autenticarse y el usuario admin podrá añadir información acerca de su cuartos, metodos de pagos, etc. El cliente solo podra hacer la reserva.
+### Estructura
+Todos los modulos estaran en la carpeta src
+.
+├── ...
+├── src                    # carpeta con los modulos en el py
+│   ├── bills              # modulo de pagos
+│   ├── booking            # modulo de reservas
+│   ├── rooms              # modulo de cuartos
+│   ├── users              # modulo de users
+│   └── ...                 # etc.
+└── ...
 
-### users
+### USERS
 Ahora vamos a usar el modelo para usuarios, utilizaremos el modelo ya existente en Django para usuarios y añadiremos una fecha de modificación, la foto del usuario, teléfono, ciudad, país y los datos para la facturación. También modificaremos la configuración por defecto para que el login sea mediante el password en vez de por username.
 Para no juntar el codigo todo en unos cuantos archivos vamos crear diferentes proyectos este sera el de Users y tendra sus propios modelos, views y serializares. esto para separa un poco la logica de negocio y sea un poco mas mantenible.
 
-La estructura quedaria algo asi :
-![enter image description here](https://i.ibb.co/DMWfnCn/iusers.png)
 
 Para esta parte Usaremos TDD, Test-driven development en terminos sencillo primero hacer la prueba unitaria y después el código. Con esta práctica se consigue entre otras cosas: un código más robusto, más seguro, más mantenible.
 las pruebas unitarias estan dentro del la carpeta users y tests.py
@@ -191,6 +200,13 @@ En cada una de las carpetas por DRF, ya tenemos el crud de forma casi automatica
 
 ## TESTING
 
+.
+├── ...
+├── tests                    # Test files (alternatively `spec` or `tests`)
+│   ├── factory              # modela la generacion de datos para las pruebas
+│   └── hotel                # Unit tests para cada modulo
+└── ...
+
 ```python
 $ python manage.py test -v 2
 Creating test database for alias 'default' ('test_hotel')...
@@ -234,8 +250,10 @@ Running migrations:
   Applying sessions.0001_initial... OK
   Applying users.0002_alter_user_id... OK
 System check identified no issues (0 silenced).
-test_room_can_be_unavailable_after_reservation (tests.hotel.bill.test_bill.CreateBookingTest) ... ok
-test_room_can_be_unavailable_after_reservation (tests.hotel.booking.test_booking.CreateBookingTest) ... ok
+test_room_can_be_unavailable_after_reservation (tests.hotel.bill.test_bill.CreateBillTest)
+test para registro de un pago dado una reserva ... ok
+test_room_can_be_unavailable_after_reservation (tests.hotel.booking.test_booking.CreateBookingTest)
+test para registro de una reserva ... ok
 test_room1_can_record_room (tests.hotel.rooms.test_rooms.CreateRoomsTest)
 Puede registrar un cuarto ... ok
 test_room2_can_not_record_with_no_field_type (tests.hotel.rooms.test_rooms.CreateRoomsTest)
@@ -248,9 +266,10 @@ test_signup_user (tests.hotel.users.test_users.UserTestCase)
 Verificamos si podemos crear un user ... ok
 
 ----------------------------------------------------------------------
-Ran 7 tests in 0.460s
+Ran 7 tests in 0.897s
 
 OK
+Destroying test database for alias 'default' ('test_hotel')...
 
 ## FUNCIONALIDAD DE LOS APIS CON POSTMAN
 para verificar nuestros APIS tambien podemos usar POSTMAN y simulemos un pequeño flujo como el siguiente :

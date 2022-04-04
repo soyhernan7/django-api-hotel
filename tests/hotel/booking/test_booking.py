@@ -6,7 +6,8 @@ from datetime import date, timedelta
 class CreateBookingTest(TestBookingFactory):
 
     def test_room_can_be_unavailable_after_reservation(self):
-        # guest = self.guest_factory()
+        """ test para registro de una reserva """
+
         room = self.room_factory()
 
         reservation_data = {

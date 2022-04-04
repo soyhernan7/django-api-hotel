@@ -5,9 +5,10 @@ from src.booking.models import Booking
 from datetime import date, timedelta
 from faker import Faker
 
-class CreateBookingTest(TestBillFactory):
+class CreateBillTest(TestBillFactory):
 
     def test_room_can_be_unavailable_after_reservation(self):
+        """ test para registro de un pago dado una reserva """
         booking = self.booking_factory()
         reservation_data = {
             "debit": 100,
